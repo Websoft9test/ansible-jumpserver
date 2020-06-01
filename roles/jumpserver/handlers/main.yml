@@ -1,0 +1,3 @@
+- name: check_jumpserver_service
+  debug:
+    var: check_jumpserver_service.stdout

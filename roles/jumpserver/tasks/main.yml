@@ -1,0 +1,98 @@
+# install JumpServer by OS_family
+- name: Install this role on {{ansible_os_family}}
+  include: "{{ansible_os_family}}.yml"
+
+# configure JumpServer
+
+- name: Create jumpserver User
+  user:
+    name: jumpserver
+    shell: /usr/sbin/nologin
+    home: /data/wwwroot/jumpserver
+    create_home: no
+
+- name: Create jumpserver directory
+  file:
+    path: /data/wwwroot/jumpserver
+    state: directory
+    owner: jumpserver
+    group: jumpserver
+    
+- name: Download jumpserver
+  get_url:
+    dest: /data/wwwroot/jumpserver
+    url: "{{jumpserver_download_url}}"
+    owner: jumpserver
+    group: jumpserver
+
+- name: Set jumpserver config
+  template:
+    src: jumpserver.conf.jinja2
+    dest: /data/wwwroot/jumpserver/jumpserver.conf
+    owner: jumpserver
+    group: jumpserver
+
+- name: Setting jumpserver service
+  copy:
+    src: jumpserver.service
+    dest: /lib/systemd/system/jumpserver.service
+
+- name: Restart jumpserver
+  service:
+    name: jumpserver.service
+    state: restarted
+    enabled: yes
+
+- name: Create jumpserver System User
+  user:
+      name: jumpserver 
+      create_home: no 
+      home: /opt/jumpserver
+      shell: /usr/sbin/nologin
+
+- name: Download jumpserver
+  unarchive:
+      src: "{{jumpserver_download_url}}"
+      dest: /opt/ 
+      group: jumpserver 
+      remote_src: yes
+      owner: jumpserver
+      mode: g+w
+
+- name: Create the storage directory for files.
+  file:
+      path: /opt/jumpserver/data
+      state: directory 
+      owner: jumpserver 
+      group: jumpserver
+      mode: g+w
+      
+- name: Set database connection /opt/jumpserver/config/config.json
+  lineinfile:
+    dest: /opt/jumpserver/config/config.json
+    regexp: '"DataSource":'
+    line: '    "DataSource": "{{jumpserver_db_user}}:{{jumpserver_db_password}}@tcp(localhost:3306)/{{jumpserver_db_name}}?charset=utf8mb4,utf8&readTimeout=30s&writeTimeout=30s",'
+    backrefs: yes 
+
+# set soft link, -b cover the exist links
+# ln -sb src des
+- name: set soft link
+  shell: |
+    ln -sb /opt/jumpserver  /data/wwwroot/jumpserver
+    ln -sb /opt/jumpserver/config /data/config/jumpserver
+
+# Check version,
+# must use sudo sh -c to solve the no-root permission
+- block:
+  - name: Check JumpServer Version
+    shell: sudo sh -c "jumpserverctl status | grep 'JumpServer version' 1>> /data/logs/install_version.txt"
+
+  - name: Check Erlang Version
+    shell: sudo sh -c 'echo "Erlang $(yum info erlang | grep Version | sed -n 1p)" 1>> /data/logs/install_version.txt'
+    when: ansible_os_family=="RedHat"
+
+# check service state
+- name: Check JumpServer Service
+  shell: systemctl status jumpserver | grep Active*
+  register: check_jumpserver_service
+  notify: check_jumpserver_service
