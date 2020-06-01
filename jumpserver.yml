@@ -9,29 +9,11 @@
   vars_files:
     - vars/main.yml
   
-  vars_prompt:
-    - name: 'JumpServer_selection'
-      prompt: "Choose the JumpServer distribution \n
-      1: JumpServer 5 Classic\n
-      2: JumpServer Artemis\n"
-      private: no
-      default: 1
-
-  vars:
-    JumpServer_select:
-      '1': "classic"
-      '2': "artemis"
-
-    JumpServer_distribution: "{{JumpServer_select[JumpServer_selection]}}"
-  
-  pre_tasks:
-    - debug:
-        msg: Will install {{JumpServer_distribution}}
 
   roles:
     - {role: role_common, tags: "role_common"}  
     - {role: role_cloud, tags: "role_cloud"}  
     - {role: role_jdk, tags: "role_jdk"}  
-    - {role: JumpServer, tags: "JumpServer"}
+    - {role: jumpserver, tags: "jumpserver"}
     - {role: role_preend, tags: "preend"}
     - {role: role_end, tags: "role_end"}
