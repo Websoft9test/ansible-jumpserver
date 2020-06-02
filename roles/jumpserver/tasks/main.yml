@@ -29,14 +29,10 @@
     bash jmsctl.sh install
 
 
-- name: Setting jumpserver service
-  template:
-    src: jumpserver.service
-    dest: /lib/systemd/system/jumpserver.service
 
 - name: Restart jumpserver
   service:
-    name: jumpserver.service
+    name: jms_core
     state: restarted
     enabled: yes
      
@@ -51,6 +47,7 @@
 # ln -sb src des
 - name: set soft link
   shell: |
+    ln -sb /usr/lib/systemd/system/jms_core.service  /usr/lib/systemd/system/jumpserver.service 
     ln -sb /opt/setuptools  /data/wwwroot/jumpserver
     ln -sb /opt/setuptools/config  /data/config/jumpserver
 
