@@ -11,9 +11,6 @@
   
   roles:
     - {role: role_common, tags: "role_common"}  
-    - {role: role_redis, tags:"role_redis"}
-      {role: role_mysql, tags: "role_mysql"}
-      {role: role_ngnix, tags: "role_ngnix"}
     - {role: jumpserver, tags: "jumpserver"}
     - {role: role_preend, tags: "preend"}
     - {role: role_end, tags: "role_end"}

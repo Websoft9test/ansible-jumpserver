@@ -34,6 +34,7 @@
     git clone --depth=1 {{jumpserver_download_url}}
     cd /setuptools
     cp config_example.conf config.conf
+    bash jmsctl.sh install
 
 
 - name: Setting jumpserver service
@@ -52,7 +53,7 @@
     dest: /opt/setuptools/config.conf
     regexp: '"DB_PASSWORD"='
     line: '"DB_PASSWORD"= "{{jumpserver_db_password}}"'
-    backrefs: yes 
+    
 
 # set soft link, -b cover the exist links
 # ln -sb src des
