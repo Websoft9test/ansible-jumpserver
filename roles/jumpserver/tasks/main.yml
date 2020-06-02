@@ -21,10 +21,11 @@
 - name: install jumpserver 
   shell: |
     cd /opt
-    yum -y install wget git
+#    yum -y install wget git
+    rm -rf setuptools
     git clone --depth=1 {{jumpserver_download_url}}
     cd /setuptools
-    cp config_example.conf config.conf
+    cp -rf config_example.conf config.conf
     bash jmsctl.sh install
 
 
@@ -64,7 +65,7 @@
 #    when: ansible_os_family=="RedHat"
 
 # check service state
-- name: Check JumpServer Service
-  shell: systemctl status jumpserver | grep Active*
-  register: check_jumpserver_service
-  notify: check_jumpserver_service
+#- name: Check JumpServer Service
+#  shell: systemctl status jumpserver | grep Active*
+#  register: check_jumpserver_service
+#  notify: check_jumpserver_service
