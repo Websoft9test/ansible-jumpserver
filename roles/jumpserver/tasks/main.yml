@@ -40,7 +40,7 @@
   lineinfile:
     dest: /opt/setuptools/config.conf
     regexp: 'DB_PASSWORD='
-    line: 'DB_PASSWORD="{{jumpserver_db_password}}"'
+    line: 'DB_PASSWORD= "{{jumpserver_db_password}}"'
     
 
 # set soft link, -b cover the exist links
